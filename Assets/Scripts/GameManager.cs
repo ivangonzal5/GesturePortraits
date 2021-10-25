@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
             imagesNumbers.Add(i);
         }
         GenerateNewPair(RandomInt(fileList.Count/2));
+        GenerateRandomDrawings();
 
     }
 
@@ -62,10 +63,10 @@ public class GameManager : MonoBehaviour
 
     void GenerateRandomDrawings()
     {
-        for(int i = 0; i < 3; i++)
+        for(int i = 1; i < 4; i++)
         {
             var tempDrawing = Instantiate(drawingPrefab, new Vector3(Random.Range(-7.0f, 7.0f), 9, 0), Quaternion.identity);
-            tempDrawing.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Drawing Pairs/" + "NUMEROO" + "A");
+            tempDrawing.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Drawing Pairs/" + i + "A");
             tempDrawing.GetComponent<Drawing>().drawingNumber = 0;
         }
         
