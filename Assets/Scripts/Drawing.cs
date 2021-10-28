@@ -7,12 +7,17 @@ public class Drawing : MonoBehaviour
     public int drawingNumber = 0;
     Vector3 placementPos = new Vector3(0, 1.85f, 0);
     Vector3 dragPosOffset;
-    Rigidbody2D rigidbody2D;
+    Rigidbody2D rb2d;
     public GameManager gm;
+
+    bool dragable = true;
+
+
+    bool correctAnswer = false;
     void Start()
     {
         dragPosOffset = new Vector3(0,0,10);
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -28,12 +33,16 @@ public class Drawing : MonoBehaviour
     /// </summary>
     void OnMouseDown()
     {
-        rigidbody2D.isKinematic = true;
+        rb2d.isKinematic = true;
     }
 
     private void OnMouseUp() 
     {
-        rigidbody2D.isKinematic = false;
+        if(!correctAnswer)
+        {
+            rb2d.isKinematic = false;
+        }
+
     }
 
     /// <summary>
@@ -42,21 +51,40 @@ public class Drawing : MonoBehaviour
     /// </summary>
     void OnMouseDrag()
     {
-        Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-        transform.position = Camera.main.ScreenToWorldPoint(mousePos);
-        transform.position += dragPosOffset;
-
-        if(Mathf.Abs(Vector3.Distance(transform.position, placementPos)) < 0.5f)
+        if(dragable)
         {
-            if(gm.selectedImage == drawingNumber)
+            Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+            transform.position = Camera.main.ScreenToWorldPoint(mousePos);
+            transform.position += dragPosOffset;
+
+            if(Mathf.Abs(Vector3.Distance(transform.position, placementPos)) < 0.5f)
             {
-                Debug.Log("Imagen Correta");
-            }
-            else
-            {
-                Debug.Log("Imagen Incorrecta");
+                if(gm.selectedImage == drawingNumber)
+                {
+                    Debug.Log("Imagen Correta");
+                    correctAnswer = true;
+                    dragable = false;
+                    rb2d.isKinematic = true;
+                    StartCoroutine(GoToPlace());
+                }
+                else
+                {
+                    Debug.Log("Imagen Incorrecta");
+                }
             }
         }
+
+    }
+
+    IEnumerator GoToPlace()
+    {
+        while(transform.position != placementPos)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, placementPos, 0.1f);
+            yield return null;
+        }
+        transform.SetParent(gm.actualFrame.transform);
+        gm.NextFrame();
     }
 
 }
