@@ -99,6 +99,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawingNumber: 0
+  gm: {fileID: 0}
+  grabSound: {fileID: 8300000, guid: da66b1e30e5436d4899e1f5be0e3dd72, type: 3}
+  correctSound: {fileID: 8300000, guid: e2b8d17303c131b49b11a1c11a61c865, type: 3}
+  wrongSound: {fileID: 8300000, guid: 5af1ee27e950e5f4599d5003396c8814, type: 3}
 --- !u!61 &7360586176474933088
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -5,10 +5,14 @@ using UnityEngine;
 public class Drawing : MonoBehaviour
 {
     public int drawingNumber = 0;
-    Vector3 placementPos = new Vector3(0, 1.85f, 0);
+    Vector3 placementPos = new Vector3(0, 1.2f, 0);
     Vector3 dragPosOffset;
     Rigidbody2D rb2d;
     public GameManager gm;
+    AudioSource soundFX;
+    public AudioClip grabSound;
+    public AudioClip correctSound;
+    public AudioClip wrongSound;
 
     bool dragable = true;
 
@@ -18,6 +22,7 @@ public class Drawing : MonoBehaviour
     {
         dragPosOffset = new Vector3(0,0,10);
         rb2d = GetComponent<Rigidbody2D>();
+        soundFX = gm.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -41,6 +46,7 @@ public class Drawing : MonoBehaviour
         if(!correctAnswer)
         {
             rb2d.isKinematic = false;
+            soundFX.PlayOneShot(grabSound);
         }
 
     }
@@ -62,14 +68,21 @@ public class Drawing : MonoBehaviour
                 if(gm.selectedImage == drawingNumber)
                 {
                     Debug.Log("Imagen Correta");
+                    soundFX.PlayOneShot(correctSound);
                     correctAnswer = true;
                     dragable = false;
                     rb2d.isKinematic = true;
                     StartCoroutine(GoToPlace());
+
+                    if(gm.imagesNumbers.Count == 0)
+                    {
+                        gm.GameOver(0);
+                    }
                 }
                 else
                 {
                     Debug.Log("Imagen Incorrecta");
+                    soundFX.PlayOneShot(wrongSound);
                 }
             }
         }

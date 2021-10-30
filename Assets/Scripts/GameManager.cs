@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     List<string> fileList = new List<string>();
-    List<int> imagesNumbers = new List<int>();
+    public List<int> imagesNumbers = new List<int>();
     public int selectedImage = 0;
 
     public GameObject framePrefab;
@@ -18,13 +19,17 @@ public class GameManager : MonoBehaviour
     private bool reloadGame = true;
     public bool generateFrame = false;
 
+    public AudioClip win;
+    public AudioClip lose;
 
+    AudioSource soundFX;
     public GameObject actualFrame;
     void Start()
     {
+        soundFX = GetComponent<AudioSource>();
         GetImages(fileList, "Drawing Pairs");
         Debug.Log("Test1");
-        StartCoroutine(WaitSecond(3.0f));
+        StartCoroutine(WaitSecond(4.0f));
     }
 
 
@@ -34,26 +39,41 @@ public class GameManager : MonoBehaviour
     {
         if(startGame && reloadGame)
         {
+            Debug.Log("Existen " + fileList.Count/2 + " Imagenes");
             for(int i = 1; i <= fileList.Count/2 ; i++)
             {
                 imagesNumbers.Add(i);
-                Debug.Log(i);
+                //Debug.Log(i);
             }
             generateFrame = true;
             reloadGame = false;
+            remainingTime = initialTime;
         }
 
-        if(generateFrame)
+        if(generateFrame && imagesNumbers.Count >0)
         {
-            GenerateNewPair(RandomInt(imagesNumbers.Count));
+            
+            GenerateNewPair(RandomIndex(imagesNumbers.Count));
             if(!drawInPlace)
             {
                 GenerateRandomDrawings();
                 drawInPlace = true;
             }
             generateFrame = false;
+            Debug.Log(imagesNumbers.Count);
         }
 
+        if(startGame)
+        {
+            if(remainingTime >0)
+            {
+                updateTime();
+            }
+            else
+            {
+                GameOver(1);
+            }
+        }
         
     }
 
@@ -72,19 +92,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    int RandomInt(int listIndex)
+    int RandomIndex(int listIndex)
     {
         int lIndex;
         lIndex = Random.Range(0, listIndex);
         int selectedNum = imagesNumbers[lIndex];
-        imagesNumbers.Remove(lIndex);
+        //imagesNumbers.Remove(lIndex);
         return selectedNum;
     }
 
     void GenerateNewPair(int imageNumber)
     {
         selectedImage = imageNumber;
-        actualFrame = Instantiate(framePrefab, new Vector3(0, 1.85f, 0), Quaternion.identity);
+        actualFrame = Instantiate(framePrefab, new Vector3(0, 1.2f, 0), Quaternion.identity);
         SpriteRenderer sr = GameObject.Find("ReferenceLine").GetComponentInChildren<SpriteRenderer>();
         sr.sprite = Resources.Load<Sprite>("Drawing Pairs/" + imageNumber + "B");
         imagesNumbers.Remove(imageNumber);
@@ -133,7 +153,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GoToPlace());
     }
 
-    Vector3 placementPos = new Vector3(-20, 1.85f , 0f);
+    Vector3 placementPos = new Vector3(-20, 1.2f , 0f);
     IEnumerator GoToPlace()
     {
         yield return new WaitForSeconds(1.5f);
@@ -145,4 +165,43 @@ public class GameManager : MonoBehaviour
         actualFrame.GetComponent<FrameBehaviour>().ChangeName(selectedImage.ToString());
         generateFrame = true;
     }
+
+
+    public void GameOver(int ending)
+    {
+        soundFX.Stop();
+        if(ending == 0)
+        {
+            soundFX.PlayOneShot(win);
+            //ganaste
+        }
+        if(ending == 1)
+        {
+            soundFX.PlayOneShot(lose);
+            //perdiste
+        }
+    }
+
+
+    #region UI
+    
+
+    public TextMeshProUGUI timer;
+    public float initialTime;
+    private float remainingTime;
+    void updateTime()
+    {
+        remainingTime -= Time.deltaTime;
+
+        if(remainingTime >= 10)
+        {
+            timer.text = "00:" + (int)remainingTime;
+        }
+        else
+        {
+            timer.text = "00:0" + (int)remainingTime;
+        }
+    }
+
+    #endregion
 }
