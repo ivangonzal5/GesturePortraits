@@ -6,16 +6,24 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public bool DRAG_ABLE = true;
+
+
     List<string> fileList = new List<string>();
     public List<int> imagesNumbers = new List<int>();
     public int selectedImage = 0;
 
     public GameObject framePrefab;
     public GameObject drawingPrefab;
+
+    public GameObject gameOverPanel;
+    public GameObject winPanel;
+    public GameObject losePanel;
     // Start is called before the first frame update
 
 
     private bool startGame = false;
+    private bool gameOver = false;
     private bool reloadGame = true;
     public bool generateFrame = false;
 
@@ -63,7 +71,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(imagesNumbers.Count);
         }
 
-        if(startGame)
+        if(startGame && !gameOver)
         {
             if(remainingTime >0)
             {
@@ -110,6 +118,8 @@ public class GameManager : MonoBehaviour
         imagesNumbers.Remove(imageNumber);
     }
 
+
+    List<GameObject> drawingInScene = new List<GameObject>();
     void GenerateRandomDrawings()
     {
         for(int i = 1; i < 4; i++)
@@ -118,6 +128,7 @@ public class GameManager : MonoBehaviour
             tempDrawing.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Drawing Pairs/" + i + "A");
             tempDrawing.GetComponent<Drawing>().drawingNumber = i;
             tempDrawing.GetComponent<Drawing>().gm = this;
+            drawingInScene.Add(tempDrawing);
         }
         
     }
@@ -159,7 +170,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         while(actualFrame.transform.position != placementPos)
         {
-            actualFrame.transform.position = Vector3.MoveTowards(actualFrame.transform.position, placementPos, 0.04f);
+            actualFrame.transform.position = Vector3.MoveTowards(actualFrame.transform.position, placementPos, 0.2f);
             yield return null;
         }
         actualFrame.GetComponent<FrameBehaviour>().ChangeName(selectedImage.ToString());
@@ -170,14 +181,37 @@ public class GameManager : MonoBehaviour
     public void GameOver(int ending)
     {
         soundFX.Stop();
+        gameOver = true;
+
+        StartCoroutine(GameOverCoroutine(ending));
+
+    }
+
+    IEnumerator GameOverCoroutine(int ending)
+    {
+        if(ending == 0)
+        {
+            yield return new WaitForSeconds(2.0f);
+        }
+
+
+        gameOverPanel.SetActive(true);
         if(ending == 0)
         {
             soundFX.PlayOneShot(win);
+            winPanel.SetActive(true);
             //ganaste
         }
         if(ending == 1)
         {
+            actualFrame.SetActive(false);
             soundFX.PlayOneShot(lose);
+            losePanel.SetActive(true);
+
+            foreach(var draw in drawingInScene)
+            {
+                draw.SetActive(false);
+            }
             //perdiste
         }
     }

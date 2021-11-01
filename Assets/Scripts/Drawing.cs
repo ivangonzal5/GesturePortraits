@@ -39,6 +39,7 @@ public class Drawing : MonoBehaviour
     void OnMouseDown()
     {
         rb2d.isKinematic = true;
+        soundFX.PlayOneShot(grabSound);
     }
 
     private void OnMouseUp() 
@@ -46,7 +47,7 @@ public class Drawing : MonoBehaviour
         if(!correctAnswer)
         {
             rb2d.isKinematic = false;
-            soundFX.PlayOneShot(grabSound);
+            
         }
 
     }
@@ -57,7 +58,7 @@ public class Drawing : MonoBehaviour
     /// </summary>
     void OnMouseDrag()
     {
-        if(dragable)
+        if(dragable && gm.DRAG_ABLE)
         {
             Vector3 mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
             transform.position = Camera.main.ScreenToWorldPoint(mousePos);
