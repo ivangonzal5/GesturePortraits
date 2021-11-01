@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     public GameObject framePrefab;
     public GameObject drawingPrefab;
 
+
+    public GameObject tutorialPanel;
     public GameObject gameOverPanel;
     public GameObject winPanel;
     public GameObject losePanel;
@@ -155,6 +157,7 @@ public class GameManager : MonoBehaviour
     IEnumerator WaitSecond(float time)
     {
         yield return new WaitForSeconds(time);
+        tutorialPanel.SetActive(false);
         startGame = true;
     }
 

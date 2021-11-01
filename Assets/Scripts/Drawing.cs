@@ -49,6 +49,7 @@ public class Drawing : MonoBehaviour
             rb2d.isKinematic = false;
             
         }
+        errorSound = false;
 
     }
 
@@ -56,6 +57,8 @@ public class Drawing : MonoBehaviour
     /// OnMouseDrag is called when the user has clicked on a GUIElement or Collider
     /// and is still holding down the mouse.
     /// </summary>
+
+    bool errorSound = false;
     void OnMouseDrag()
     {
         if(dragable && gm.DRAG_ABLE)
@@ -86,7 +89,11 @@ public class Drawing : MonoBehaviour
                 else
                 {
                     Debug.Log("Imagen Incorrecta");
-                    soundFX.PlayOneShot(wrongSound);
+                    if(!errorSound)
+                    {
+                        soundFX.PlayOneShot(wrongSound);
+                        errorSound = true;
+                    }
                 }
             }
         }
