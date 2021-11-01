@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
             remainingTime = initialTime;
         }
 
-        if(generateFrame && imagesNumbers.Count >0)
+        if(generateFrame && imagesNumbers.Count >0 && !gameOver)
         {
             
             GenerateNewPair(RandomIndex(imagesNumbers.Count));
@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour
     List<GameObject> drawingInScene = new List<GameObject>();
     void GenerateRandomDrawings()
     {
-        for(int i = 1; i < 4; i++)
+        for(int i = 1; i < 7; i++)
         {
             var tempDrawing = Instantiate(drawingPrefab, new Vector3(Random.Range(-7.0f, 7.0f), 9, 0), Quaternion.identity);
             tempDrawing.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Drawing Pairs/" + i + "A");

@@ -73,6 +73,9 @@ public class Drawing : MonoBehaviour
                     correctAnswer = true;
                     dragable = false;
                     rb2d.isKinematic = true;
+                    Destroy(rb2d);
+                    GetComponent<BoxCollider2D>().enabled = false;
+                    
                     StartCoroutine(GoToPlace());
 
                     if(gm.imagesNumbers.Count == 0)
